@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>untitled2</title>
+    <script src="Agnesi.js"></script>
+</head>
+<body>
+<table>
+    <tr>
+        <td>
+            <canvas id="myCanvas" width="400" height="300"
+                    data-name="myCanvas"
+                    data-ymin="-10" data-ymax="10"
+                    data-which-function="10/(x-2)"
+                    data-start="-3" data-stop="3"
+                    data-asymptotes="2"
+                    data-label="10/(x-2)"
+                    data-which-function2="(x+2)^2-6"
+                    data-curve-color2="red"
+                    data-start2="-5" data-stop2="1"
+                    data-label2="(x+2)^2-6"
+            ></canvas>
+            <script type="text/javascript">
+                Agnesi.new_graph("myCanvas")
+            </script>
+        </td>
+        <td>
+            <canvas id="secondCanvas" width="400" height="300"
+                    data-name="secondCanvas"
+                    data-which-function="sin(t2t)"
+                    data-ind-var="t2t"
+                    data-input-box="secondInput"
+                    data-start="-3" data-stop="3"
+                    data-figure="2"
+                    data-plug-box="plugInput"
+                    data-unplug-box="unplugInput"
+                    data-label="f"
+            ></canvas>
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: center;">
+            10/(<i>x</i> &#x2212; 2) and (<i>x</i> + 2)<sup>2</sup> &#x2212; 6
+        </td>
+        <td style="text-align: center;">
+            <label for="secondInput"><i>f</i>(<i>t</i><sub>2<i>t</i></sub>) =</label>
+            <input id="secondInput" autocomplete="off" placeholder="f(x)" type="text" value="sin(t2t)">
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td style="text-align: center;">
+            <label for="plugInput">points to plot</label>
+            <input id="plugInput" autocomplete="off" placeholder="enter (x,y) pairs" type="text" value="">
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td style="text-align: center;">
+            <label for="unplugInput">points to un-plot</label>
+            <input id="unplugInput" autocomplete="off" placeholder="enter (x,y) pairs" type="text" value="">
+        </td>
+    </tr>
+</table>
+<script type="text/javascript">
+    Agnesi.new_graph("secondCanvas")
+</script>
+</body>
+</html>
