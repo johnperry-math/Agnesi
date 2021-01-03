@@ -12,7 +12,7 @@ and eventually retired to a monastery.
 
 The library aims to
 * be interactive;
-* be programmable via JavaScript;
+* be programmable via JavaScript (or languages that compile to JavaScript);
 * automatically put arrows on curves;
 * graph known discontinuities;
 * provide gridlines;
@@ -108,6 +108,8 @@ Defaults, if any, shown in parentheses.
       `data-unplugs`
     * an input box where the user can redefine the plugs: `data-plug-box`
     * an input box where the user can redefine the unplugs: `data-unplug-box`
+    * the area between the curve and the x-axis: `data-show-integral` (`false`)
+    * the color of the area between the curve and the x-axis: `data-integral-color` (`#0000ff40`)
   * a text label, placed slightly above or below the curve, 3/4 of the way across its domain: `data-label`
 
 ...more to come!
@@ -115,7 +117,7 @@ Defaults, if any, shown in parentheses.
 ## Structure
 
 The source code is in Kotlin and compiles to JavaScript.
-Once Kotlin compiles to WebAssembly, I hope to bypass JavaScript entirely.
+Once Kotlin compiles to WebAssembly, I intend to bypass JavaScript entirely.
 
 Currently, there are two main files.
 

@@ -341,6 +341,7 @@ data class Plot_Points(
     val f: Function_Properties,
     var points: Array< Pair<Double, Double> >,
     override val color: String = "#0000ff",
+    var fill_color: String = "#0000ff40",
     val thickness: Double = 2.0,
     val dashed: Boolean = false,
     val arrows: Pair<Boolean, Boolean> = Pair ( first = true, second = true ),
@@ -443,6 +444,31 @@ data class Plot_Points(
     }
 
     /**
+     * draws the area between the function and the x-axis
+     */
+    private fun draw_integral(properties: Graph_Properties) {
+        val canvas = properties.canvas
+        val context = canvas.getContext("2d") as CanvasRenderingContext2D
+        val old_color = context.fillStyle
+        context.fillStyle = fill_color
+        context.beginPath()
+        val path = Path2D()
+        val p = translate_point(
+            Pair(points[0].first, 0.0),
+            properties.x_scale, properties.y_scale, properties.x_translate, properties.y_translate, canvas.height
+        )
+        path.moveTo(p.first, p.second)
+        for (point in plot_points) path.lineTo(point.first, point.second)
+        val q = translate_point(
+            Pair(points.last().first, 0.0),
+            properties.x_scale, properties.y_scale, properties.x_translate, properties.y_translate, canvas.height
+        )
+        path.lineTo(q.first, q.second)
+        context.fill(path)
+        context.fillStyle = old_color
+    }
+
+    /**
      * draws all related data to [properties]
      *
      * TODO: detect when graph moves off screen and add arrows?
@@ -464,6 +490,9 @@ data class Plot_Points(
         context.strokeStyle = color
         context.fillStyle = color
         context.lineWidth = thickness
+
+        // typically we want the area drawn before the curve
+        if (f.show_integral) draw_integral(properties)
 
         // sometimes we need to dash the curve (e.g., asymptotes) but arrows should not be dashed
 
@@ -702,7 +731,7 @@ data class Plot_Points(
         context.setLineDash( arrayOf(dash_length, dash_length) )
         for ((type, x) in discontinuities) {
             if (type == disc_asymp) {
-                context.moveTo(x, properties.canvas.height.toDouble())
+                context.moveTo(x, canvas.height.toDouble())
                 context.lineTo(x, 0.0)
             }
         }
@@ -1192,6 +1221,9 @@ data class Function_Properties(
     var plugs: Array< Pair< Double, Double > > = arrayOf(),
     var unplugs: Array< Pair< Double, Double > > = arrayOf(),
 
+    var show_integral: Boolean = false,
+    var fill_color: String = color + "40",
+
     var modifier: String = "",
     var plug_box: String = "",
     var unplug_box: String = "",
@@ -1326,7 +1358,7 @@ fun apply(
         // compute points, then add to plot_canvas
         val points = plot(f.start, f.stop, f.num_points, f.f)
         val plotted_points = Plot_Points(
-            f, points, color = f.color, thickness = f.thickness, dashed = f.dashed,
+            f, points, color = f.color, fill_color = f.fill_color, thickness = f.thickness, dashed = f.dashed,
             holes = f.holes, asymptotes = f.asymptotes, plugs = f.plugs,
             jumps = f.jumps, unplugs = f.unplugs, arrows = f.arrows, change_with_view = f.change_with_view
         )
@@ -1502,6 +1534,11 @@ fun new_graph(canvas_id: String) {
                 console.log("$canvas_id listening to unplugs at $unplug_box_name")
             }
 
+            // integral?
+            val show_integral = canvas.getAttribute("data-show-integral$suffix").toBoolean()
+            val integral_color = canvas.getAttribute("data-integral-color$suffix") ?: "#0000ff40"
+            console.log(show_integral.toString())
+
             // label?
             val label = canvas.getAttribute("data-label$suffix") ?: ""
 
@@ -1513,6 +1550,8 @@ fun new_graph(canvas_id: String) {
                 change_with_view = change_view, num_points = num_points,
                 holes = holes, asymptotes = asymptotes, jumps = jumps,
                 plugs = plugs, unplugs = unplugs,
+                show_integral = show_integral,
+                fill_color = integral_color,
                 modifier = input_box_name, plug_box = plug_box_name, unplug_box = unplug_box_name,
                 arrows = Pair(arrow_left, arrow_right),
                 label = label
