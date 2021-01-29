@@ -4,11 +4,26 @@
     <meta charset="UTF-8">
     <title>untitled2</title>
     <script src="Agnesi.js"></script>
+    <script>
+        MathJax = {
+            tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]},
+            svg: {fontCache: 'global'},
+            startup: {
+                ready: function () {
+                    MathJax.startup.defaultReady();
+                }
+            }
+        }
+    </script>
+    <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
 </head>
 <body>
 <table>
     <tr>
         <td>
+            <div id="place_label"></div>
             <canvas id="myCanvas" width="400" height="300"
                     data-name="myCanvas"
                     data-ymin="-10" data-ymax="10"
@@ -20,6 +35,7 @@
                     data-curve-color2="red"
                     data-start2="-5" data-stop2="1"
                     data-label2="(x+2)^2-6"
+                    data-latex-enclosure2="place_label"
             ></canvas>
             <script type="text/javascript">
                 Agnesi.new_graph("myCanvas")

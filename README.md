@@ -111,6 +111,10 @@ Defaults, if any, shown in parentheses.
     * the area between the curve and the x-axis: `data-show-integral` (`false`)
     * the color of the area between the curve and the x-axis: `data-integral-color` (`#0000ff40`)
   * a text label, placed slightly above or below the curve, 3/4 of the way across its domain: `data-label`
+    * you can request that the label be the formula, processed in LaTeX via [MathJax](https://www.mathjax.org/)!
+      for this we have the `data-latex-enclosure` option, in which you specify
+      the id of an HTML `<div>` element, which should either enclose or immediately precede your Canvas;
+      see the example file
 
 ...more to come!
 

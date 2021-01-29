@@ -1182,6 +1182,74 @@ data class Text_Object(
 }
 
 /**
+ * a [Graph_Object] that we use to label a function's graph in LaTeX format
+ *
+ * Note that this uses innerHTML to produce the text, rather than a Canvas Context.
+ * Hence, this (currently) needs an enclosing object, such as a <div>,
+ * placed immediately before the Canvas (it need not enclose the Canvas as well).
+ *
+ * TODO Consider rolling our own; using MathJax requires a bit of a kludge,
+ *  and we have to trust the client to remember to include MathJax, set up a <div>
+ *  so that MathJax can find the text, etc.
+ *
+ * @param text the text to write; should already be in LaTeX markup
+ * @param latex_enclosure an HTMLElement into which we position [text] at ([x], [y]);
+ *      this should be a <div> that either encloses the Canvas or begins and ends immediately before it
+ * @param x where to write [text], relative to the Canvas
+ * @param y where to write [text], relative to the Canvas
+ * @param size size of the type
+ * @param typeface which typeface ("font") to use; currently, MathJax 3 uses only its own typeface,
+ *      so this is unfortunately useless for the time being
+ * @param color the color to use when drawing
+ */
+data class LaTeX_Object(
+    val text: String,
+    val latex_enclosure: String,
+    val x: Double,
+    val y: Double,
+    val size: Int = 18,
+    val typeface: String = "Serif",
+    override val color: String = "#0000ff",
+): Graph_Object(color = color) {
+
+    /**
+     * draw [text] into [latex_enclosure]
+     */
+    override fun draw_to(properties: Graph_Properties) {
+
+        // translate the point from absolute location to view-relative
+
+        var point = translate_point(
+            Pair(x, y),
+            properties.x_scale, properties.y_scale,
+            properties.x_translate, properties.y_translate,
+            properties.canvas.height
+        )
+
+        point = Pair(
+            if (point.first + 30 <= properties.canvas.width) point.first + 20 else point.first - 10,
+            if (point.second - 20 >= 10) point.second - 20 else point.second + 10
+        )
+
+        // write the text
+
+        val target = document.getElementById(latex_enclosure)
+
+        if (target != null) {
+            target.innerHTML =
+                "<div><span style=\"position: absolute; left: ${point.first}px; " +
+                        "top: ${point.second}px; transform:translateX(-50%); z-index: 5;" +
+                        "font-size: $size; font: $typeface; color: $color; background-color: #ffffffaa;\">\\(" +
+                        text + "\\)</span></div>"
+
+            js("function typeset_later() { MathJax.typesetPromise();} setTimeout(typeset_later, 3000);")
+        }
+
+    }
+
+}
+
+/**
  * algebraic properties of a function being graphed, along with some permanent visual properties
  *
  * @property ind_var the independent variable; usually "x" but can be "t2" if you like
@@ -1202,6 +1270,8 @@ data class Text_Object(
  * @property plug_box name of an input that redefines the plugs associated with [f]
  * @property arrows whether to draw arrows on left or right of plot (indicating that the graph continues)
  * @property label an optional text label for the graph, typically placed roughly 3/4 of the way
+ * @property latex_enclosure if MathJax version 3 is enabled on the webpage, you can give the ID of an HTMLElement
+ *      here, into which Agnesi will place a LaTeX'd label, and invoke MathJax.typesetPromise() to typeset it
  * @see Evaluation_Tree_Node
  */
 data class Function_Properties(
@@ -1230,9 +1300,12 @@ data class Function_Properties(
 
     var arrows: Pair<Boolean, Boolean> = Pair(first = false, second = false),
 
-    var label: String = ""
+    var label: String = "",
+    var latex_enclosure: String = ""
 
 ) {
+
+    fun to_LaTeX(): String = f.toLaTeXString()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -1255,6 +1328,7 @@ data class Function_Properties(
         if (!unplugs.contentEquals(other.plugs)) return false
         if (modifier != other.modifier) return false
         if (arrows != other.arrows) return false
+        if (label != other.label) return false
 
         return true
     }
@@ -1368,14 +1442,31 @@ fun apply(
 
         if (f.label != "") {
 
-            val which_point = ( points.size * 3 ) / 4
-            plot_canvas.add_object(
-                Text_Object(
-                    f.label,
-                    points[which_point].first, points[which_point].second,
-                    color = f.color
+            if (f.latex_enclosure != "") {
+
+                val which_point = points[ (points.size * 3) / 4 ]//points.last()
+
+                plot_canvas.add_object(
+                    LaTeX_Object(
+                        f.to_LaTeX(), f.latex_enclosure,
+                        which_point.first, which_point.second,
+                        color = f.color
+                    )
                 )
-            )
+
+            } else {
+
+                val which_point = points[ (points.size * 3) / 4 ]
+
+                plot_canvas.add_object(
+                    Text_Object(
+                        f.label,
+                        which_point.first, which_point.second,
+                        color = f.color
+                    )
+                )
+
+            }
 
         }
 
@@ -1496,6 +1587,9 @@ fun new_graph(canvas_id: String) {
                 parse(ind_var, input_box.value)
             }
 
+            // if we prefer LaTeX labels on graphs, use a <div> enclosure to position it
+            val latex_enclosure = canvas.getAttribute("data-latex-enclosure$suffix") ?: ""
+
             // x values to start and stop graphing, and number of points to use
             val start = canvas.getAttribute("data-start$suffix")?.toDouble() ?: gp.x_min
             val stop = canvas.getAttribute("data-stop$suffix")?.toDouble() ?: gp.x_max
@@ -1554,7 +1648,8 @@ fun new_graph(canvas_id: String) {
                 fill_color = integral_color,
                 modifier = input_box_name, plug_box = plug_box_name, unplug_box = unplug_box_name,
                 arrows = Pair(arrow_left, arrow_right),
-                label = label
+                label = label,
+                latex_enclosure = latex_enclosure
             )
 
             // add to records
@@ -1571,6 +1666,6 @@ fun new_graph(canvas_id: String) {
 }
 
 fun main() {
-    // eventually this will scan the entire document to automatically process tags
+    // TODO eventually this should scan the entire document and process tags automatically
     console.log("read script")
 }

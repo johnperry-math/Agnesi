@@ -97,6 +97,7 @@ abstract class Evaluation_Tree_Node {
     abstract val type: Node_Type
     internal abstract val children: Array<Evaluation_Tree_Node>
     override fun toString(): String = type.repr
+    abstract fun toLaTeXString(): String
     operator fun get(i: Int) = children[i]
     operator fun set(i: Int, operand: Evaluation_Tree_Node) {
         children[i] = operand
@@ -127,6 +128,7 @@ class Constant_Node(val value: Double)
     : Nary_Node(CONST)
 {
     override fun toString(): String = value.toString()
+    override fun toLaTeXString(): String = value.toString()
     override fun is_polynomial() = true
 }
 
@@ -141,6 +143,7 @@ class Indeterminate_Node(private val name: String)
     : Nary_Node(INDET)
 {
     override fun toString(): String = name
+    override fun toLaTeXString(): String = name
     override fun is_polynomial() = true
 }
 
@@ -179,6 +182,32 @@ class Unary_Node(node_type: Unary_Node_Type, child: Evaluation_Tree_Node)
             EXP -> "e^(${children[0]})"
 
             RECIPROCAL -> "1/(${children[0]})"
+
+        }
+
+    override fun toLaTeXString(): String =
+        when (type) {
+
+            NEGATE -> "-" +
+                    ( if ((children[0] !is Unary_Node)) "\\left(" else "" ) +
+                    children[0].toLaTeXString() +
+                    ( if ((children[0] !is Unary_Node)) "\\right)" else "" )
+
+            GROUP -> "\\left(" + children[0].toLaTeXString() + "\\right)"
+
+            SIN, COS, TAN, COT, SEC, CSC,
+            ASIN, ACOS, ATAN, ACOT, ASEC, ACSC,
+            LN, LOG -> "\\" + "${type.repr}(" + children[0].toLaTeXString() + ")"
+
+            FLOOR -> "\\lfloor" + children[0].toLaTeXString() + "\\rfloor"
+
+            SQRT -> "\\sqrt{" + children[0].toLaTeXString() + "}"
+
+            ABS -> "\\left|" + children[0].toLaTeXString() + "\\right|"
+
+            EXP -> "e^{" + children[0].toLaTeXString() + "}"
+
+            RECIPROCAL -> "\\frac{1}{" + children[0].toLaTeXString() + "}"
 
         }
 
@@ -222,6 +251,21 @@ class Binary_Node(
 
         }
 
+    override fun toLaTeXString(): String =
+        when (type) {
+
+            PLUS, MINUS ->
+                 children[0].toLaTeXString() + type.repr + children[1].toLaTeXString()
+
+            TIMES -> children[0].toLaTeXString() + "\\cdot " + children[1].toLaTeXString()
+
+            DIV -> "\\frac{" + children[0].toLaTeXString() + "}{" +
+                    children[1].toLaTeXString() + "}"
+
+            POW -> children[0].toLaTeXString() + "^{" + children[1].toLaTeXString() + "}"
+
+        }
+
     override fun is_polynomial() =
         when (type) {
             PLUS, MINUS, TIMES -> children[0].is_polynomial() && children[1].is_polynomial()
@@ -242,6 +286,7 @@ class Binary_Node(
  */
 class Error_Node(val position: Int) : Nary_Node(ERR) {
     override val children = arrayOf<Evaluation_Tree_Node>()
+    override fun toLaTeXString(): String = "error"
 }
 
 class Polynomial_Node(
@@ -264,6 +309,22 @@ class Polynomial_Node(
                 if (abs(coefficients[i]) != 1.0) result += abs(coefficients[i]).toString()
                 if (i > 1) result += " $indet^$i "
                 else if (i == 1) result += " $indet "
+            }
+        }
+        return result
+    }
+
+    override fun toLaTeXString(): String {
+        var result = ""
+        var first = true
+        for (i in coefficients.indices.reversed()) {
+            if (coefficients[i] != 0.0) {
+                if (coefficients[i] < 0.0) result += "-"
+                else if (!first) result += "+"
+                if (first) first = false
+                if (abs(coefficients[i]) != 1.0) result += abs(coefficients[i]).toString()
+                if (i > 1) result += "$indet^i"
+                else if (i == 1) result += indet
             }
         }
         return result
