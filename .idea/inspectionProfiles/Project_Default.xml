@@ -2,25 +2,29 @@
   <profile version="1.0">
     <option name="myName" value="Project Default" />
     <inspection_tool class="ClassName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <option name="namePattern" value="[A-Z][_A-Za-z\d]*" />
+      <option name="namePattern" value="[A-Z][_A-Za-zα-ω\d]*" />
     </inspection_tool>
     <inspection_tool class="EnumEntryName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <option name="namePattern" value="[A-Z]([_A-Za-z\d]*|[A-Z_\d]*)" />
+      <option name="namePattern" value="[A-Z]([_A-Za-zα-ω\d]*|[A-Zα-ω_\d]*)" />
     </inspection_tool>
     <inspection_tool class="FunctionName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <option name="namePattern" value="[a-z][_A-Za-z\d]*" />
+      <option name="namePattern" value="[a-z\p{InGreek}][_A-Za-z\p{InGreek}\d]*" />
     </inspection_tool>
     <inspection_tool class="LocalVariableName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <option name="namePattern" value="[a-z][_A-Za-z\d]*" />
+      <option name="namePattern" value="[a-z\p{InGreek}][_A-Za-z\p{InGreek}θ\d]*" />
+    </inspection_tool>
+    <inspection_tool class="NonAsciiCharacters" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="CHECK_FOR_NOT_ASCII_IDENTIFIER_NAME" value="false" />
+      <option name="CHECK_FOR_DIFFERENT_LANGUAGES_IN_IDENTIFIER_NAME" value="false" />
     </inspection_tool>
     <inspection_tool class="PrivatePropertyName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <option name="namePattern" value="_?[a-z][_A-Za-z\d]*" />
+      <option name="namePattern" value="_?[a-z][_A-Za-zα-ω\d]*" />
     </inspection_tool>
     <inspection_tool class="PropertyName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <option name="namePattern" value="[a-z][_A-Za-z\d]*" />
+      <option name="namePattern" value="[a-z][_A-Za-zα-ω\d]*" />
     </inspection_tool>
     <inspection_tool class="TestFunctionName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <option name="namePattern" value="[a-z][_A-Za-z_\d]*" />
+      <option name="namePattern" value="[a-z][_A-Za-zα-ω_\d]*" />
     </inspection_tool>
   </profile>
 </component>

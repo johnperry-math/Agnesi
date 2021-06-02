@@ -67,7 +67,7 @@ private fun arrow_direction(
 
 /**
  * A generic object to be graphed.
- * Current descendents are [Plot_Points] and [Text_Object].
+ * Current descendants are [Plot_Points] and [Text_Object].
  * @property color the color the object should have
  */
 abstract class Graph_Object(
@@ -108,10 +108,10 @@ abstract class Graph_Object(
  * @property y_max largest y-value in the view; dynamic plots will use this to redraw
  * @property y_min smallest y-value in the view; dynamic plots will use this to redraw
  * @property arrow_size how large to draw each plot's arrows, as well as the axes' arrows
- * @property with_gridlines whether to draw gridlines in the background
- * @property grid_dx horizontal distance between gridlines
- * @property grid_dy vertical distance between gridlines
- * @property grid_color the gridlines' color
+ * @property with_gridlines whether to draw grid lines in the background
+ * @property grid_dx horizontal distance between grid lines
+ * @property grid_dy vertical distance between grid lines
+ * @property grid_color the grid lines' color
  */
 data class Graph_Properties(
     val canvas: HTMLCanvasElement,
@@ -207,8 +207,8 @@ data class Graph_Properties(
      * draws the background grid
      *
      * @param context a drawing context
-     * @param width the canvas' width; effectively, how many pixels wide a horizontal gridline should be
-     * @param height the canvas' height; effectively, how many pixels high a vertical gridline should be
+     * @param width the canvas' width; effectively, how many pixels wide a horizontal grid line should be
+     * @param height the canvas' height; effectively, how many pixels high a vertical grid line should be
      */
     private fun draw_grid(context: CanvasRenderingContext2D, width: Double, height: Double ) {
 
@@ -232,7 +232,7 @@ data class Graph_Properties(
             y -= grid_dy
         }
 
-        // now draw vertical gridlines
+        // now draw vertical grid lines
 
         var x = grid_dx
         while (x <= x_max + abs(x_translate)) {
@@ -255,8 +255,8 @@ data class Graph_Properties(
      * draw the axes, including arrows at the end
      *
      * @param context a drawing context
-     * @param width the canvas' width; effectively, how many pixels wide a horizontal gridline should be
-     * @param height the canvas' height; effectively, how many pixels high a vertical gridline should be
+     * @param width the canvas' width; effectively, how many pixels wide a horizontal grid line should be
+     * @param height the canvas' height; effectively, how many pixels high a vertical grid line should be
      */
     private fun draw_axes(context: CanvasRenderingContext2D, width: Double, height: Double) {
 
@@ -1016,28 +1016,28 @@ fun report_movement(e: Event) {
             // this is a pinch; rescale the view
 
             // identify previous finger positions and determine distance between them
-            val P1 = local_props.start_drag
-            val P2 = local_props.start_pinch
-            val distance_original = sqrt((P1.first - P2.first) * (P1.first - P2.first) +
-                    (P1.second - P2.second) * (P1.second - P2.second))
+            val p1 = local_props.start_drag
+            val p2 = local_props.start_pinch
+            val distance_original = sqrt((p1.first - p2.first) * (p1.first - p2.first) +
+                    (p1.second - p2.second) * (p1.second - p2.second))
 
             // identify current finger positions and determine distance between them
             val touch1 = (e as TouchEvent).changedTouches[0]!!
             val touch2 = e.changedTouches[1]
-            val Q1 =
+            val q1 =
                 when {
                     touch1.identifier == first_finger_id -> Pair(touch1.clientX.toDouble(), touch1.clientY.toDouble())
                     touch2 != null -> Pair(touch2.clientX.toDouble(), touch2.clientY.toDouble())
-                    else -> P1
+                    else -> p1
                 }
-            val Q2 =
+            val q2 =
                 when {
                     touch1.identifier == second_finger_id -> Pair(touch1.clientX.toDouble(), touch1.clientY.toDouble())
                     touch2 != null -> Pair(touch2.clientX.toDouble(), touch2.clientY.toDouble())
-                    else -> P2
+                    else -> p2
                 }
-            val distance_new = sqrt((Q1.first - Q2.first) * (Q1.first - Q2.first) +
-                    (Q1.second - Q2.second) * (Q1.second - Q2.second))
+            val distance_new = sqrt((q1.first - q2.first) * (q1.first - q2.first) +
+                    (q1.second - q2.second) * (q1.second - q2.second))
 
             // only rescale if there's a serious difference
             if ( abs( distance_new - distance_original ) > 1 ) {
@@ -1045,8 +1045,8 @@ fun report_movement(e: Event) {
                     local_props,
                     (distance_new - distance_original) / (local_props.canvas.width + local_props.canvas.height)
                 )
-                local_props.start_drag = Q1
-                local_props.start_pinch = Q2
+                local_props.start_drag = q1
+                local_props.start_pinch = q2
             }
 
         }
