@@ -1,17 +1,17 @@
 plugins {
-    kotlin("js") version "1.4.21"
+    kotlin("js") version "1.7.10"
 }
 
 group = "cantanima.name"
 version = "1.0-SNAPSHOT"
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
 dependencies {
     testImplementation(kotlin("test-js"))
+    implementation(kotlin("stdlib-js"))
 }
 
 kotlin {

@@ -565,7 +565,7 @@ fun constant(expression: String, position: Int): Pair<Constant_Node, Int> {
     if (is_negative) i += 1
     while ((i < expression.length) && (expression[i] in '0'..'9')) {
         value *= 10
-        value += expression[i].toInt() - '0'.toInt()
+        value += expression[i].code - '0'.code
         ++i
     }
     if ((i < expression.length) && (expression[i] == '.')) {
@@ -573,7 +573,7 @@ fun constant(expression: String, position: Int): Pair<Constant_Node, Int> {
         var denominator = 1.0
         while (expression[i] in '0'..'9') {
             denominator /= 10.0
-            value += denominator * ( expression[i].toInt() - '0'.toInt() )
+            value += denominator * ( expression[i].code - '0'.code )
             ++i
         }
     }

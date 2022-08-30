@@ -1284,12 +1284,12 @@ data class Function_Properties(
 
     val change_with_view: Boolean = false, var num_points: Int = 1000,
 
-    var holes: Array< Pair<Double, Double> > = arrayOf(),
+    var holes: Array<Pair<Double, Double>> = arrayOf(),
     var asymptotes: Array<Double> = arrayOf(),
     var jumps: Array<Double> = arrayOf(),
 
-    var plugs: Array< Pair< Double, Double > > = arrayOf(),
-    var unplugs: Array< Pair< Double, Double > > = arrayOf(),
+    var plugs: Array<Pair<Double, Double>> = arrayOf(),
+    var unplugs: Array<Pair<Double, Double>> = arrayOf(),
 
     var show_integral: Boolean = false,
     var fill_color: String = color + "40",
@@ -1301,9 +1301,9 @@ data class Function_Properties(
     var arrows: Pair<Boolean, Boolean> = Pair(first = false, second = false),
 
     var label: String = "",
-    var latex_enclosure: String = ""
+    var latex_enclosure: String = "",
 
-) {
+    ) {
 
     fun to_LaTeX(): String = f.toLaTeXString()
 
