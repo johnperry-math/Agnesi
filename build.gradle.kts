@@ -1,38 +1,30 @@
-plugins {
-    kotlin("js") version "1.7.10"
-}
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 
-group = "cantanima.name"
-version = "1.0-SNAPSHOT"
+plugins {
+    kotlin("multiplatform") version "2.0.0"
+}
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation(kotlin("test-js"))
-    implementation(kotlin("stdlib-js"))
+kotlin {
+    js(IR) {
+        browser {
+        }
+        binaries.executable()
+    }
+
+    sourceSets {
+        jsMain {
+            kotlin.srcDir("src/main/kotlin")
+            resources.srcDir("src/main/resources")
+        }
+    }
 }
 
-kotlin {
-    js(LEGACY) {
-        browser {
-            binaries.executable()
-            webpackTask {
-                cssSupport.enabled = true
-            }
-            runTask {
-                cssSupport.enabled = true
-            }
-            testTask {
-                useKarma {
-                    useChromeHeadless()
-                    webpackConfig.cssSupport.enabled = true
-                }
-            }
-            dceTask {
-                keep("Agnesi.new_graph")
-            }
-        }
+tasks.withType<KotlinJsCompile>().configureEach {
+    compilerOptions {
+        target = "es2015"
     }
 }
